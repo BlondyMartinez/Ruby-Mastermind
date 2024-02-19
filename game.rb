@@ -55,7 +55,7 @@ class Game
 
   def creator_mode
     puts 'Please, type the color of the balls in order. For example, for: ' +
-         '●'.blue + '●'.white + '●'.cyan + '●'.magenta + ". You'd do: type blue, press enter, type white, press enter, type cyan, press enter."
+         '● '.blue + '● '.white + '● '.cyan + '●'.magenta + ". You'd do: type blue, press enter, type white, press enter, type cyan, press enter."
   end
 
   def generate_code
@@ -126,13 +126,13 @@ class Game
     @guesser_code.each_with_index do |color, index|
       ball = '●'.send(color)
       guesser_code << ball
-      
+
       next unless @code.include?(ball)
 
       @feedback += if ball == @code[index]
-                     double_correct
+                     double_correct + " "
                    else
-                     correct
+                     correct + " "
                    end
     end
 
