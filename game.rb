@@ -11,13 +11,13 @@ class Game
 
   def play(game_mode)
     puts
-    return if @game_over
-
     if game_mode === 'creator'
       creator_mode
     else
       guesser_mode
     end
+
+    initialize if @game_over
   end
 
   def welcome
@@ -30,7 +30,7 @@ class Game
     puts 'There are two game modes:'
     puts 'Creator: in this mode you choose the colors and order of the balls.'
     puts 'Guesser: the computer creates the code for you, and you guess.'
-    puts 'In both moves, the guesser has 12 attempts and gets some feedback: a white ○ for correct color and a green ' + '○'.green + ' for correct color and position.'
+    puts 'In both moves, the guesser has 12 attempts and gets some feedback: a white ' + '○'.white + ' for correct color and a green ' + '○'.green + ' for correct color and position.'
     puts
   end
 
@@ -130,9 +130,9 @@ class Game
       next unless @code.include?(ball)
 
       @feedback += if ball == @code[index]
-                     double_correct + " "
+                     double_correct + ' '
                    else
-                     correct + " "
+                     correct + ' '
                    end
     end
 
@@ -141,15 +141,14 @@ class Game
   end
 
   def win?
-    if @feedback == double_correct * 4
-      puts
-      puts "Congratulations! You've guessed the correct code!"
-      puts @code.join(' ')
-      puts
+    return unless @feedback.delete(' ') === double_correct.delete(' ') * 4
 
-      initialize
-    end
-    false
+    puts
+    puts "Congratulations! You've guessed the correct code!"
+    puts @code.join(' ')
+    puts
+
+    @game_over = true
   end
 
   def lose
@@ -158,7 +157,8 @@ class Game
     puts 'The code: ' + @code.join(' ')
     puts 'Your guess: ' + @guesser_code.join(' ')
     puts
-    initialize
+
+    @game_over = true
   end
 
   def guesser_mode
