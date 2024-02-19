@@ -30,7 +30,7 @@ class Game
     puts 'There are two game modes:'
     puts 'Creator: in this mode you choose the colors and order of the balls.'
     puts 'Guesser: the computer creates the code for you, and you guess.'
-    puts 'In both moves, the guesser has 12 attempts and gets some feedback: a white O for correct color and a green ' + 'O'.green + ' for correct color and position.'
+    puts 'In both moves, the guesser has 12 attempts and gets some feedback: a white ○ for correct color and a green ' + '○'.green + ' for correct color and position.'
     puts
   end
 
@@ -111,35 +111,41 @@ class Game
   end
 
   def double_correct
-    'O'.green
+    '○'.green
   end
 
   def correct
-    'O'.white
+    '○'.white
   end
 
   def compare_codes
     puts
-    feedback = ''
+    guesser_code = []
+    @feedback = ''
+
     @guesser_code.each_with_index do |color, index|
       ball = '●'.send(color)
-      if @code.include?(ball)
-        if ball == @code[index]
-          puts 'hello'
-          feedback += double_correct
-        else
-          puts 'holi'
-          feedback += correct
-        end
-      end
+      guesser_code << ball
+      
+      next unless @code.include?(ball)
+
+      @feedback += if ball == @code[index]
+                     double_correct
+                   else
+                     correct
+                   end
     end
-    puts feedback
+
+    puts 'Your code: ' + guesser_code.join(' ')
+    puts @feedback
   end
 
   def win?
-    if @code === @guesser_code
+    if @feedback == double_correct * 4
       puts
-      puts 'Congratulations!'
+      puts "Congratulations! You've guessed the correct code!"
+      puts @code.join(' ')
+      puts
 
       initialize
     end
@@ -149,6 +155,9 @@ class Game
   def lose
     puts
     puts "You didn't guess the code :c"
+    puts 'The code: ' + @code.join(' ')
+    puts 'Your guess: ' + @guesser_code.join(' ')
+    puts
     initialize
   end
 
