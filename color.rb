@@ -20,4 +20,9 @@ class String
     white: 37,
     pink: 95
   }
+
+  def color_name
+    color_code = self.color_code
+    color_code ? COLOR_CODES.key(color_code) : nil
+  end
 end

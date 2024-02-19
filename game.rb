@@ -56,8 +56,50 @@ class Game
   def creator_mode
     puts 'Please, type the color of the balls in order. For example, for: ' +
          '● '.blue + '● '.white + '● '.cyan + '●'.magenta + ". You'd do: type blue, press enter, type white, press enter, type cyan, press enter."
+
+    create_code
   end
 
+  def guesser_mode
+    generate_code
+    until @game_over
+      puts
+      puts 'Type your guess. Remember your choices are: ' + 'red,'.red + ' green,'.green + ' yellow,'.yellow + ' blue,'.blue + ' magenta,'.magenta + ' cyan,'.cyan + ' white,'.white + ' and ' + 'pink'.pink + '.'
+
+      @guesser_code = [validate_color_input(gets.chomp), validate_color_input(gets.chomp),
+                       validate_color_input(gets.chomp), validate_color_input(gets.chomp)]
+
+      compare_codes
+      win?
+
+      @attempts += 1
+      lose if @attempts == 12
+    end
+  end
+
+  # creator_mode stuff below
+
+  def create_code
+    @code = []
+    @code = [validate_code_input(gets.chomp), validate_code_input(gets.chomp), validate_code_input(gets.chomp),
+             validate_code_input(gets.chomp)]
+
+    puts 'A code has been generated, it does not have duplicates.'
+  end
+
+  def validate_code_input(input)
+    validate_color_input(input)
+    @code.each do |ball|
+      while ball.color_name.downcase.include?(input.downcase)
+        puts "You can't repeat colors. Please choose again."
+        input = validate_color_input(gets.chomp)
+      end
+    end
+
+    input
+  end
+
+  # guesser_mode stuff below
   def generate_code
     @code = []
     set_of_balls = Set.new
@@ -101,7 +143,7 @@ class Game
 
   COLOR_CHOICES = %w[red green yellow blue magenta cyan white pink]
 
-  def validate_code_input(input)
+  def validate_color_input(input)
     unless COLOR_CHOICES.include?(input.downcase)
       puts 'Enter a valid color.'
       input = gets.chomp
@@ -159,22 +201,5 @@ class Game
     puts
 
     @game_over = true
-  end
-
-  def guesser_mode
-    generate_code
-    until @game_over
-      puts
-      puts 'Type your guess. Remember your choices are: ' + 'red,'.red + ' green,'.green + ' yellow,'.yellow + ' blue,'.blue + ' magenta,'.magenta + ' cyan,'.cyan + ' white,'.white + ' and ' + 'pink'.pink + '.'
-
-      @guesser_code = [validate_code_input(gets.chomp), validate_code_input(gets.chomp),
-                       validate_code_input(gets.chomp), validate_code_input(gets.chomp)]
-
-      compare_codes
-      win?
-
-      @attempts += 1
-      lose if @attempts == 12
-    end
   end
 end
