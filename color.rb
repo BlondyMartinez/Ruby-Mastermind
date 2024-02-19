@@ -3,31 +3,21 @@ class String
     "\e[#{color_code}m#{self}\e[0m"
   end
 
-  def red
-    colorize(31)
+  %w[red green yellow blue magenta cyan white pink].each do |color|
+    define_method(color) do
+      colorize(COLOR_CODES[color.to_sym])
+    end
   end
 
-  def green
-    colorize(32)
-  end
-
-  def yellow
-    colorize(33)
-  end
-
-  def blue
-    colorize(34)
-  end
-
-  def magenta
-    colorize(35)
-  end
-
-  def cyan
-    colorize(36)
-  end
-  
-  def white
-    colorize(37)
-  end
+  # Define color codes for each color
+  COLOR_CODES = {
+    red: 31,
+    green: 32,
+    yellow: 33,
+    blue: 34,
+    magenta: 35,
+    cyan: 36,
+    white: 37,
+    pink: 95
+  }
 end

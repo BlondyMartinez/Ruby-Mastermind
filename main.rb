@@ -1,3 +1,3 @@
-require_relative 'color.rb'
+require_relative 'game.rb'
 
-puts "hello".red
+game = Game.new
