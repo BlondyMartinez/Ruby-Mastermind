@@ -81,22 +81,21 @@ class Game
 
   def create_code
     @code = []
-    @code = [validate_code_input(gets.chomp), validate_code_input(gets.chomp), validate_code_input(gets.chomp),
-             validate_code_input(gets.chomp)]
-
-    puts 'A code has been generated, it does not have duplicates.'
-  end
-
-  def validate_code_input(input)
-    validate_color_input(input)
-    @code.each do |ball|
-      while ball.color_name.downcase.include?(input.downcase)
+    
+    4.times do |i|
+      color = validate_color_input(gets.chomp)
+      while @code.include?(color)
         puts "You can't repeat colors. Please choose again."
-        input = validate_color_input(gets.chomp)
+        color = validate_color_input(gets.chomp)
       end
+      @code << color
     end
 
-    input
+    @code.each_with_index do |color, index|
+      @code[index] = '●'.send(color)
+    end
+    
+    puts 'Your code is: ' + @code.join(' ')
   end
 
   # guesser_mode stuff below
