@@ -4,14 +4,14 @@ class Game
   def initialize
     welcome
     instructions
-    mode = choose_mode
+    @mode = choose_mode
     set_game_variables
-    play(mode)
+    play
   end
 
-  def play(game_mode)
+  def play
     puts
-    if game_mode === 'creator'
+    if @mode === 'creator'
       creator_mode
     else
       guesser_mode
@@ -58,6 +58,7 @@ class Game
          '● '.blue + '● '.white + '● '.cyan + '●'.magenta + ". You'd do: type blue, press enter, type white, press enter, type cyan, press enter."
 
     create_code
+    computer_guess
   end
 
   def guesser_mode
@@ -81,8 +82,8 @@ class Game
 
   def create_code
     @code = []
-    
-    4.times do |i|
+
+    4.times do |_i|
       color = validate_color_input(gets.chomp)
       while @code.include?(color)
         puts "You can't repeat colors. Please choose again."
@@ -94,11 +95,59 @@ class Game
     @code.each_with_index do |color, index|
       @code[index] = '●'.send(color)
     end
-    
+
     puts 'Your code is: ' + @code.join(' ')
   end
 
+  def computer_guess
+    possible_solutions = generate_all_possible_codes
+    attempt = 0
+
+    until attempt == 12
+      attempt += 1
+      puts
+      puts "Attempt #{attempt}:"
+      @guesser_code = generate_computer_guess(possible_solutions)
+
+      compare_codes
+      break if win?
+
+      possible_solutions = update_possible_solutions(possible_solutions, @guesser_code)
+    end
+    lose
+  end
+
+  def generate_computer_guess(possible_solutions)
+    possible_solutions.sample
+  end
+
+  def update_possible_solutions(possible_solutions, guess)
+    possible_solutions.select do |code|
+      compare_codes_for_update(guess, code).strip == @feedback
+    end
+  end
+
+  def compare_codes_for_update(_guess, code)
+    @feedback = ''
+    @guesser_code.each_with_index do |color, index|
+      ball = '●'.send(color)
+      next unless code.include?(ball)
+
+      @feedback += if ball == code[index]
+                     double_correct + ' '
+                   else
+                     correct + ' '
+                   end
+    end
+    @feedback
+  end
+
+  def generate_all_possible_codes
+    COLOR_CHOICES.repeated_permutation(4).to_a
+  end
+
   # guesser_mode stuff below
+
   def generate_code
     @code = []
     set_of_balls = Set.new
@@ -142,6 +191,8 @@ class Game
 
   COLOR_CHOICES = %w[red green yellow blue magenta cyan white pink]
 
+  # game stuff below
+
   def validate_color_input(input)
     unless COLOR_CHOICES.include?(input.downcase)
       puts 'Enter a valid color.'
@@ -177,7 +228,8 @@ class Game
                    end
     end
 
-    puts 'Your code: ' + guesser_code.join(' ')
+    puts 'Your code: ' + guesser_code.join(' ') if @mode == 'guesser'
+    puts "Computer's code: " + guesser_code.join(' ') if @mode == 'creator'
     puts @feedback
   end
 
@@ -185,7 +237,8 @@ class Game
     return unless @feedback.delete(' ') === double_correct.delete(' ') * 4
 
     puts
-    puts "Congratulations! You've guessed the correct code!"
+    puts "Congratulations! You've guessed the correct code!" if @mode == 'guesser'
+    puts 'The computer has guessed your code!' if @mode == 'creator'
     puts @code.join(' ')
     puts
 
@@ -194,9 +247,18 @@ class Game
 
   def lose
     puts
-    puts "You didn't guess the code :c"
-    puts 'The code: ' + @code.join(' ')
-    puts 'Your guess: ' + @guesser_code.join(' ')
+    if @mode == 'guesser'
+      puts "You didn't guess the code :c"
+      puts 'The code: ' + @code.join(' ')
+      puts 'Your guess: ' + @guesser_code.join(' ')
+    else
+      @guesser_code.each_with_index do |color, index|
+        @guesser_code[index] = '●'.send(color)
+      end
+      puts "The computer didn't guess your code :c"
+      puts 'Your code: ' + @code.join(' ')
+      puts "Computer's code: " + @guesser_code.join(' ')
+    end
     puts
 
     @game_over = true
