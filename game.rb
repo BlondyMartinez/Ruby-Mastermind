@@ -58,7 +58,7 @@ class Game
          '● '.blue + '● '.white + '● '.cyan + '●'.magenta + ". You'd do: type blue, press enter, type white, press enter, type cyan, press enter."
 
     create_code
-    computer_guess
+    computer_plays
   end
 
   def guesser_mode
@@ -99,22 +99,25 @@ class Game
     puts 'Your code is: ' + @code.join(' ')
   end
 
-  def computer_guess
+  def computer_plays
     possible_solutions = generate_all_possible_codes
-    attempt = 0
+    @guesser_code = ["red", "red", "green", "green"]
+    compare_codes
+    possible_solutions = update_possible_solutions(possible_solutions, @guesser_code)
+    
+    attempt = 1
 
     until attempt == 12
       attempt += 1
       puts
       puts "Attempt #{attempt}:"
       @guesser_code = generate_computer_guess(possible_solutions)
-
       compare_codes
       break if win?
 
       possible_solutions = update_possible_solutions(possible_solutions, @guesser_code)
     end
-    lose
+    lose if !win?
   end
 
   def generate_computer_guess(possible_solutions)
@@ -123,23 +126,22 @@ class Game
 
   def update_possible_solutions(possible_solutions, guess)
     possible_solutions.select do |code|
-      compare_codes_for_update(guess, code).strip == @feedback
+      compare_codes_for_update(guess, code).strip == @feedback.strip
     end
   end
 
-  def compare_codes_for_update(_guess, code)
-    @feedback = ''
-    @guesser_code.each_with_index do |color, index|
-      ball = '●'.send(color)
-      next unless code.include?(ball)
+  def compare_codes_for_update(guess, code)
+    feedback = ''
+    guess.each_with_index do |color, index|
+      next unless code.include?(color)
 
-      @feedback += if ball == code[index]
-                     double_correct + ' '
-                   else
-                     correct + ' '
-                   end
+      feedback += if color == code[index]
+                    double_correct + ' '
+                  else
+                    correct + ' '
+                  end
     end
-    @feedback
+    feedback
   end
 
   def generate_all_possible_codes
