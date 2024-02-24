@@ -14,3 +14,5 @@ Welcome to my Mastermind game project! This classic code-breaking game is develo
 3. **Run the Game**: Once the project is forked, click on the "Run" button to start playing.
 
 ## Gameplay GIFs
+![Guesser Demo](guesser.gif)
+![Creator Demo](creator.gif)
